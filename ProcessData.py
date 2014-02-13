@@ -101,4 +101,4 @@ for i in range(len(actions)):
 # 	newobs.append(map(lambda e: int(e.count(1) > len(e)/2.), o))
 # print newobs
 
-print em(obs, actions, 4, 36, opa, 5)
+print em(obs, actions, 2, 36, opa, 50, 10)

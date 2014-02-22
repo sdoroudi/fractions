@@ -4,7 +4,7 @@ sys.path.append('/Users/ShayanDoroudi/Dropbox/Research/svnrepo/code')
 from hmmEM import em
 
 filename = '../../../Data/ManchesterDataset.txt'
-problemsets = ['Manchester Fractions Study 2013 Comparison']
+problemsets = ['Manchester Fractions Study 2013 Comparison', 'Manchester Fractions Study 2013 Equivalence']
 
 
 file = open(filename)
@@ -16,8 +16,15 @@ curr_prob = None
 # a = 0 # Action id
 actions = [[]]
 obs = [[]]
-fakeSteps = ['', '_root goToStep', 'done ButtonPressed', None]
+fakeSteps = ['', '_root goToStep', 'done ButtonPressed', '_root numToWord', '_root pieReset', '_root rectReset', 'denom_output UpdateTextArea', 'denom_outputWord UpdateTextArea', 'num_output UpdateTextArea', 'num_outputWord UpdateTextArea', 'note_taker UpdateTextArea', None]
+kcs = {}
+kccount = -1
 while row != ['']:
+	kc = row[31]
+	if kc != '' and kc not in kcs: 
+		kccount += 1
+		kcs[kc] = kccount
+		print kc
 	if row[3] != curr_student and row[13] in problemsets:
 		curr_student = row[3]
 		curr_prob = None
@@ -38,11 +45,10 @@ while row != ['']:
 			# obs[-1].append([])
 		# else:
 		# 	actions[-1].pop(-1)
-		actions[-1].append(int(curr_prob))
-		fakeSteps = fakeSteps[0:3]
+		fakeSteps = fakeSteps[0:12]
 	if row[17] not in fakeSteps:
 		obs[-1].append(1 if row[19] == 'Correct' else 0)
-		actions[-1].append(int(curr_prob))
+		actions[-1].append(kcs[row[31]])
 		fakeSteps.append(row[17])
 	# if row[17] not in fakeSteps:
 	# 	obs[-1][-1].append(1 if row[19] == 'Correct' else 0)
@@ -53,9 +59,6 @@ while row != ['']:
 	row = file.readline().split('\t')
 
 file.close()
-
-print len(obs)
-print len(actions)
 
 # Can be used when observations are "ternary" -- 0 for incorrect, 1 for correct, 2 for hint
 
@@ -88,7 +91,7 @@ print len(actions)
 # 	for lst in s:
 # 		decobs[-1].append(bin2dec(lst))
 
-opa = [0 for i in range(36)]
+opa = [0 for i in range(10)]
 for i in range(len(actions)):
 	for j in range(len(actions[i])):
 		actions[i][j] = actions[i][j] - 1
@@ -101,4 +104,4 @@ for i in range(len(actions)):
 # 	newobs.append(map(lambda e: int(e.count(1) > len(e)/2.), o))
 # print newobs
 
-print em(obs, actions, 2, 36, opa, 50, 10)
+print em(obs, actions, 2, 10, opa, 100, 20)
